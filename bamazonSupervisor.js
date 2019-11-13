@@ -1,126 +1,146 @@
-//modules
-const mysql = require("mysql");
-const inquirer = require("inquirer");
-const Table = require("cli-table");
-const colors = require("colors");
+// SETUP
+// =====================================================================================
+var mysql = require('mysql');
+var inquirer = require('inquirer');
+var chalk = require('chalk');
+var Table = require('cli-table');
 
-
-//sets mysql database to a variable
-const connection = mysql.createConnection({
-    host: "localhost",
-    port: 8889,
-    user: "root",
-    password: "root",
-    database: "bamazon"
+var connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'root',
+    database: 'bamazon'
 });
 
-//connects to the database
-connection.connect(function (err) {
-    //if error, display error
+connection.connect((err) => {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-    //otherwise show supervisor prompts
-    showQuestions();
+    console.log('Connection successful');
+    resetData();
+    // display all items from database once mysql connection has been established
+    displayMenu();
 });
 
-//supervisor prompts (viewing sales & adding depts)
-function showQuestions() {
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "option",
-            message: "Welcome Bamazon Supervisor! What would you like to do?",
-            choices: [
-                "View Product Sales by Department",
-                "Create New Department"
-            ]
-        }
-    ]).then(function (input) {
-        switch (input.option) {
-            case "View Product Sales by Department":
-                viewSales();
-                break;
+// GLOBAL VARIABLES
+// =====================================================================================
+var deptToDelete = [];
 
-            case "Create New Department":
-                addDepartment();
+// FUNCTIONS
+// =====================================================================================
+var resetData = function() {
+    deptToDelete = [];
+};
+
+var displayMenu = function() {
+    inquirer.prompt({
+        name: 'action',
+        type: 'rawlist',
+        message: 'Choose an action:',
+        choices: [
+            'View Departments',
+            'View Product Sales by Department',
+            'Create New Department',
+            'Delete A Department'
+        ]
+    }).then((answer) => {
+        switch (answer.action) {
+            case 'View Departments':
+                viewDepartments();
+                break;
+            case 'View Products Sales by Department':
+                viewDepartmentSales();
+                break;
+            case 'Create New Department':
+                createDepartment();
+                break;
+            case 'Delete A Department':
+                deleteDepartment();
                 break;
         }
     });
-}
+};
 
-//function for viewing sales
-function viewSales() {
-
-    const query = "SELECT department_id, departments.department_name, over_head_costs, product_sales, (product_sales - over_head_costs) AS total_profit FROM departments, products WHERE departments.department_name=products.department_name";
-
-    connection.query(query, function (err, res) {
-        if (err) throw err;
-
-        const table = new Table({
-            head: ["ID", "Department", "Overhead Costs", "Product Sales", "Total Profit"],
-            style: {
-                head: ['magenta'],
-                compact: false,
-                colAligns: ["center"],
-            }
+var viewDepartments = function() {
+    connection.query('SELECT * FROM departments', (err, res) => {
+        var listTable = new Table({
+            head: ['Dept ID', 'Dept Name', 'Overhead'],
+            colWidths: [10, 25, 12]
         });
 
-        //creates table
-        for (let i = 0; i < res.length; i++) {
-            table.push(
-                [res[i].department_id, res[i].department_name, res[i].over_head_costs, res[i].product_sales, res[i].total_profit]
-            );
+        for (var i = 0; i < res.length; i++) {
+            listTable.push([res[i].department_id, res[i].department_name, `$${res[i].over_head_costs}`])
+            // console.log(chalk.blue.bold(`\n\tDept ID: ${res[i].department_id}\n\tDept Name: ${res[i].department_name}\n\tOverhead Costs: $${res[i].over_head_costs}\n`));
         }
 
-        console.log(table.toString());
-
-        continuePrompt();
-    })
-}
-
-//function for adding departments
-function addDepartment() {
-    inquirer.prompt([
-        {
-            name: "department_name",
-            type: "input",
-            message: "What is the name of the department you're adding?"
-
-        }, {
-            name: "over_head_costs",
-            type: "input",
-            message: "What is the department's overhead costs?"
-        }]).then(function (input) {
-            connection.query("INSERT INTO departments SET ?", {
-                department_name: input.department_name,
-                over_head_costs: input.over_head_costs
-            }, function (err, res) {
-                if (err) throw err;
-
-                console.log("Department added successfully!".magenta);
-
-                continuePrompt();
-            
-            }
-        )
+        console.log(`\n\n${listTable.toString()}\n\n`);
+        connection.end();
     });
-    
-}
-//returns to main menu or exits application
-function continuePrompt() {
+};
+
+var viewDepartmentSales = function() {
+    connection.query(`SELECT * FROM products`, (err, res) => {
+        for (var i = 0; i < res.length; i++) {
+            console.log(chalk.blue.bold(`\n\tItem ID: ${res[i].item_id}\n\tProduct Name: ${res[i].product_name}\n\tPrice: $${res[i].price}\n`));
+        }
+        connection.end();
+    });
+};
+
+var createDepartment = function() {
     inquirer.prompt([
         {
-            type: "list",
-            name: "backToStart",
-            message: "Return to menu?",
-            choices: ["Yes", "No"],
-        }
-    ]).then(function(input){
-        if (input.backToStart === "Yes") {
-            showQuestions();     
-        } else {
-            console.log("Goodbye!".rainbow);
-            process.exit();
-        }
-    })
-}
+            name: 'name',
+            type: 'input',
+            message: 'Enter the department name:'
+        },
+        {
+            name: 'overhead',
+            type: 'input',
+            message: 'Enter the overhead costs for this department:',
+            validate: (value) => {
+                if (!isNaN(value) && value > 0) {
+                    return true;
+                } else {
+                    console.log(chalk.red(' => Oops, please enter a number greater than 0'));
+                    return false;
+                }
+            }
+        },
+    ]).then((answers) => {
+        connection.query('INSERT INTO departments SET ?', {
+            department_name: answers.name,
+            over_head_costs: answers.overhead
+        }, (err, res) => {
+            if (err) throw err;
+            console.log(chalk.blue.bold('\n\tDepartment successfully added!\n'));
+            connection.end();
+        });
+    });
+};
+
+var deleteDepartment = function() {
+    inquirer.prompt({
+        name: 'deptID',
+        type: 'input',
+        message: 'Enter the ID of the department you\'d like to remove:'
+    }).then((answer) => {
+        connection.query('SELECT * FROM departments WHERE ?', { department_id: answer.deptID }, (err, res) => {
+            inquirer.prompt({
+                name: 'confirm',
+                type: 'confirm',
+                message: `You would like to delete` + chalk.blue.bold(` '${res[0].department_name}'. `) + `Is this correct?`
+            }).then((answer) => {
+                if (answer.confirm) {
+                    deptToDelete.push(res);
+                    connection.query('DELETE FROM departments WHERE ?', { department_id: deptToDelete[0][0].department_id }, (err, res) => {
+                        if (err) throw err;
+                        console.log(chalk.blue.bold('\n\tDepartment successfully deleted!\n'));
+                        connection.end();
+                    });
+                } else {
+                    deleteDepartment();
+                }
+            });
+        });
+    });
+};

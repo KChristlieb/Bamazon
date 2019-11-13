@@ -1,60 +1,105 @@
-# Bamazon
-Bamazon is a command line storefront app that uses MySQL to store and retrieve information. In the app, customers can buy products, managers can view and manipulate inventory, and supervisors can track sales. 
+# Bamazon <a id="top"></a>
+Week 12 Homework
 
-## Getting Started
-Clone the repository to a local directory on your computer. To clone the repository, run the following command in your terminal/command prompt:
+___
 
-````
-git clone https://github.com/kchristlieb/Bamazon.git
-````
+## Overview
+Simple command line storefront with two functionalities:
 
-Change the directory to the project root directory (Bamazon) and install the required npm packages using: 
+* [**Customer**](#customer-demo)
+	* allows user to view and purchase products
+* [**Manager**](#manager-demo)
+	* allows user to view, update, add, and remove products
 
-````
-npm install 
-````
+___
 
-Then, run command for the mode you want to be on:
-* Customer - node bamazonCustomer
-* Manager - node bamazonManager
-* Supervisor - node bamazonSupervisor
 
-## Modes
-**Customer Mode**
+#### Run Application
+Once you have the Bamazon database set up, run these commands in the command line:
 
-<img src="images/customerpage.png" alt="Screenshot of customer page" title="customerpage"/>
+```
+git clone https://github.com/KChristlieb/Bamazon.git
+cd Bamazon
+npm install
+node bamazonCustomer.js
+```
+Note: type `node bamazonManager.js` to access the manager portal
 
-The customer page displays a table of available products. The user purchases items by typing in the id of the product they want and the amount they want.
+___
 
-------------------------------
-**Manager Mode**
+## Customer Demo <a id="customer-demo"></a>
+The customer interface:
 
-<img src="images/managerpage.png" alt="Screenshot of manager page" title="managerpage"/>
+```
+1) Presents the customer with a table of all available products
+2) Asks for the ID of the customer's desired product
+3) Asks how many items the customer would like to purchase
+4) Confirms order & updates product inventory in database
+```
+![customer demo][1_bamazonCustomer]
 
-On the manager page, the menu contains for prompts:
-* View Products - Displays table of products with expanded infomation, such as stock amounts
-* View Low Inventory - Display table of products with low stock
-* Add Inventory - Allows the manager to add stock to a product of their choosing
-* Add New Product - Allows the manager to add a new product that's available for purchase
+[Scroll to top](#top)
 
-------------------------------
-**Supervisor Mode**
+___
 
-<img src="images/supervisorpage.png" alt="Screenshot of supervisor page" title="supervisorpage"/>
+## Manager Demo <a id="manager-demo"></a>
+The manager interface presents a list of actions:
 
-The supervisor page contains a different menu:
-* View Product Sales - Displays a table with overhead costs, product sales, and total profit by department
-* Create New Department - Allows the supervisor to add a new department and it's overhead costs
+![manager demo: list of actions][2_bamazonManager]
 
-------------------------------
+___
 
-Additonally, all modes contain a second prompt that returns to the main menu or exits the application.
+```
+1) View Products for Sale
+Displays a table of all active products available to the customer
+```
+![manager demo: view active products][3_bamazonManager]
 
-## Built With
-* Javascript ES 6
-* [Node.js](https://nodejs.org/en/)
-* MySQL
-* Sequel Pro
- 
+___
 
+
+```
+2) View Low Inventory
+Displays a table of all products with fewer than 5 items in stock
+(or a message that there are no low-stock items)
+```
+![manager demo: view low inventory][4_bamazonManager]
+
+___
+
+```
+3) Add to Inventory
+Allows the manager to add more items to a product's inventory
+```
+![manager demo: add to inventory][5_bamazonManager]
+
+___
+
+```
+4) Add New Product
+Allows the manager to list a new product that is available for purchase
+```
+![manager demo: add new product][6_bamazonManager]
+
+___
+
+```
+5) Remove A Product
+Allows the manager to remove a product from the store
+```
+![manager demo: remove a product][7_bamazonManager]
+
+[Scroll to top](#top)
+
+___
+
+## Technologies Used
+* JavaScript
+*  [Node JS](https://nodejs.org/en/download/)
+* [MySQL](https://dev.mysql.com/doc/refman/5.6/en/installing.html)
+* NPM Packages:
+	- [mysql](https://www.npmjs.com/package/mysql)
+	- [inquirer](https://www.npmjs.com/package/inquirer)
+	- [chalk](https://www.npmjs.com/package/chalk)
+	- [cli-table](https://www.npmjs.com/package/cli-table)
 
