@@ -44,7 +44,7 @@ ___
 ## Manager Demo <a id="manager-demo"></a>
 The manager interface presents a list of actions:
 
-![manager demo: list of actions][2_bamazonManager]
+<img src="screenshots/manager_view.PNG" alt="Manager list screenshot" title="Manager list">
 
 ___
 
@@ -52,7 +52,7 @@ ___
 1) View Products for Sale
 Displays a table of all active products available to the customer
 ```
-![manager demo: view active products][3_bamazonManager]
+<img src="screenshots/manager_product.PNG" alt="Product screenshot" title="Manger product view">
 
 ___
 
@@ -62,7 +62,7 @@ ___
 Displays a table of all products with fewer than 5 items in stock
 (or a message that there are no low-stock items)
 ```
-![manager demo: view low inventory][4_bamazonManager]
+<img src="screenshots/manager_low.PNG" alt="Low stock screenshot" title="Manager low stock warning">
 
 ___
 
@@ -70,7 +70,7 @@ ___
 3) Add to Inventory
 Allows the manager to add more items to a product's inventory
 ```
-![manager demo: add to inventory][5_bamazonManager]
+<img src="screenshots/manager_add.PNG" alt="Add inventory screenshot" title="Manager add inventory">
 
 ___
 
@@ -78,7 +78,7 @@ ___
 4) Add New Product
 Allows the manager to list a new product that is available for purchase
 ```
-![manager demo: add new product][6_bamazonManager]
+<img src="screenshots/manager_new.PNG" alt="Add new product screenshot" title="Manager new product">
 
 ___
 
@@ -86,7 +86,7 @@ ___
 5) Remove A Product
 Allows the manager to remove a product from the store
 ```
-![manager demo: remove a product][7_bamazonManager]
+<img src="screenshots/manager_remove.PNG" alt="Remove product screenshot" title="Manager remove product">
 
 [Scroll to top](#top)
 
