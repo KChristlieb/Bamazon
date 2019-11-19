@@ -35,7 +35,7 @@ The customer interface:
 3) Asks how many items the customer would like to purchase
 4) Confirms order & updates product inventory in database
 ```
-![customer demo][1_bamazonCustomer]
+<img src="screenshots/customer.PNG" alt="customer screenshot" title="customer side">
 
 [Scroll to top](#top)
 
